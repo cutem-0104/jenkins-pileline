@@ -16,7 +16,7 @@ pipeline {
                 docker { image 'osdn/slash-build' }
             }
             steps {
-                echo test
+                sh 'echo test'
                 //sh 'rm -rf RestServiceSample'
                 //sh 'git clone https://github.com/cutem-0104/RestServiceSample.git'
                 //sh 'cd RestServiceSample && gradle war'

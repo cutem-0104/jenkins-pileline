@@ -1,12 +1,5 @@
-pipeline {
-    stages {
-        stage('Deploy') {
-            agent {
-                label 'master'
-            }
-            steps {
-                sh 'echo test'
-            }
-        }
-    }
+node {
+  stage('Echo') {
+    echo 'My first Jenkinsfile'
+  }
 }

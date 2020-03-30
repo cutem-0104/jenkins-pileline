@@ -1,0 +1,44 @@
+#!groovy
+import groovy.json.JsonBuilder
+
+def attachmentPayload = [[
+    fallback: "execution #${env.BUILD_NUMBER}",
+    color: "#2eb886",
+    pretext: "${env.JOB_NAME}",
+    text: "DEPLOY DONE #${env.BUILD_NUMBER}",
+]]
+
+pipeline {
+    agent none
+    stages {
+        stage('Build') {
+            agent {
+                docker { image 'osdn/slash-build' }
+            }
+            steps {
+                sh 'rm -rf RestServiceSample'
+                sh 'git clone https://github.com/cutem-0104/RestServiceSample.git'
+                sh 'cd RestServiceSample && gradle war'
+            }
+        }
+        stage('Deploy') {
+            agent {
+                label 'master'
+            }
+            steps {
+                sh 'sudo cp /var/lib/jenkins/workspace/slash-build-build/RestServiceSample/build/libs/*.war /home/cutem/rest-app/Docker/tomcat/target/war/ROOT.war'
+                sh 'cd /home/cutem/rest-app/Docker && sudo docker-compose down'
+                sh 'cd /home/cutem/rest-app/Docker && sudo docker-compose up -d'
+                sh 'curl -L http://153.127.14.75/greeting'
+            }
+        }
+    }
+    post {
+        always {
+            echo 'DEPLOY DONE'
+            script {// ここだけscripted pipeline のsyntaxを適用する
+                slackSend(channel: '#sugaya_github_bot', color: "#2eb886", attachments: new JsonBuilder(attachmentPayload).toString())
+            }
+        }
+    }
+}

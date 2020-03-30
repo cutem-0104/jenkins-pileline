@@ -13,7 +13,10 @@ pipeline {
     stages {
         stage('Build') {
             agent {
-                docker { image 'osdn/slash-build' }
+                docker {
+                    image 'osdn/slash-build'
+                    args '-e BRANCH_NAME=${BRANCH_NAME}'
+                }
             }
             steps {
                 sh 'rm -rf RestServiceSample'

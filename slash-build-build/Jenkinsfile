@@ -9,19 +9,13 @@ def attachmentPayload = [[
 ]]
 
 pipeline {
-    agent {
-        label 'master'
-    }
-    environment {
-        mysqlserver = "${MYSQL_SERVER}"
-        mysqlpassword = "${MYSQL_PASSWORD}"
-    }
+    agent none
     stages {
         stage('Build') {
             agent {
                 docker {
                     image 'osdn/slash-build'
-                    args '-e BRANCH_NAME=${BRANCH_NAME} -e MYSQL_SERVER=${mysqlserver} -e MYSQL_PASSWORD=${mysqlpassword}'
+                    args '-e BRANCH_NAME=${BRANCH_NAME}'
                 }
             }
             steps {
@@ -38,7 +32,7 @@ pipeline {
             steps {
                 sh 'sudo cp /var/lib/jenkins/workspace/slash-build-build/RestServiceSample/build/libs/*.war /home/cutem/rest-app/Docker/tomcat/target/war/ROOT.war'
                 sh 'cd /home/cutem/rest-app/Docker && sudo docker-compose down'
-                sh 'cd /home/cutem/rest-app/Docker && sudo docker-compose up'
+                sh 'cd /home/cutem/rest-app/Docker && sudo docker-compose up -d'
                 sh 'curl -L http://153.127.14.75/greeting'
             }
         }

@@ -9,13 +9,19 @@ def attachmentPayload = [[
 ]]
 
 pipeline {
-    agent none
+    agent {
+        label 'master'
+    }
+    environment {
+        mysqlserver = "${MYSQL_SERVER}"
+        mysqlpassword = "${MYSQL_PASSWORD}"
+    }
     stages {
         stage('Build') {
             agent {
                 docker {
                     image 'osdn/slash-build'
-                    args '-e BRANCH_NAME=${BRANCH_NAME}'
+                    args '-e BRANCH_NAME=${BRANCH_NAME} -e MYSQL_SERVER=${mysqlserver} -e MYSQL_PASSWORD=${mysqlpassword}'
                 }
             }
             steps {

@@ -38,7 +38,7 @@ pipeline {
             steps {
                 sh 'sudo cp /var/lib/jenkins/workspace/slash-build-build/RestServiceSample/build/libs/*.war /home/cutem/rest-app/Docker/tomcat/target/war/ROOT.war'
                 sh 'cd /home/cutem/rest-app/Docker && sudo docker-compose down'
-                sh 'cd /home/cutem/rest-app/Docker && sudo docker-compose up -d'
+                sh 'cd /home/cutem/rest-app/Docker && sudo docker-compose up -d  -e MYSQL_SERVER=${mysqlserver} -e MYSQL_PASSWORD=${mysqlpassword}'
                 sh 'curl -L http://153.127.14.75/greeting'
             }
         }
